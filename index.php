@@ -44,34 +44,50 @@ function securePass($lengthMin = 10, $lengthMax = NULL)
 ?>
 <?php
     function secureHash($text=NULL, $salt=NULL, $mode='whirlpool', $test=FALSE){
-		if ($salt === NULL)		// This generates a salt hash.
+	
+	if ($salt === NULL)		// This generates a salt hash.
             $salt = uniqid(mt_rand(), true);
-        if ($test !== TRUE)
-        	$saltHash = hash($mode, $salt);
-		if ($text === NULL) {	// For creating random hashes.
-			$outHash = hash($mode, uniqid(mt_rand(), true));
-		} else {				// For secure string hashes and checks.
-	        $saltStart = strlen($text);
-	        $textHash = hash($mode, $text);
-	        if ($test === TRUE)
-	        	list($saltHash, $testHash) = str_split($salt, strlen($textHash));
-	        if($saltStart > 0 && $saltStart < strlen($saltHash)) {
-	            $textHashStart = substr($textHash,0,$saltStart);
-	            $textHashEnd = substr($textHash,$saltStart,strlen($saltHash));
-	            $outHash = hash($mode, $textHashEnd.$saltHash.$textHashStart);
-	        } elseif($saltStart > (strlen($saltHash)-1)) {
-	            $outHash = hash($mode, $textHash.$saltHash);
-	        } else {
-	            $outHash = hash($mode, $saltHash.$textHash);
-	        }
-	        
-	        if ($test === TRUE && $saltHash.$outHash === $salt)
-	        	return TRUE;
-	        elseif ($test === TRUE)
-	        	return FALSE;
-	        	
+        
+	if ($test !== TRUE)
+	    $saltHash = hash($mode, $salt);
+	
+	if ($text === NULL) {	// For creating random hashes.
+	    
+	    $outHash = hash($mode, uniqid(mt_rand(), true));
+	
+	} else {				// For secure string hashes and checks.
+	    
+	    $saltStart = strlen($text);
+	    $textHash = hash($mode, $text);
+	    
+	    if ($test === TRUE)
+		list($saltHash, $testHash) = str_split($salt, strlen($textHash));
+	    
+	    if($saltStart > 0 && $saltStart < strlen($saltHash)) {
+		
+		$textHashStart = substr($textHash,0,$saltStart);
+		$textHashEnd = substr($textHash,$saltStart,strlen($saltHash));
+		$outHash = hash($mode, $textHashEnd.$saltHash.$textHashStart);
+		
+	    } elseif($saltStart > (strlen($saltHash)-1)) {
+		
+		$outHash = hash($mode, $textHash.$saltHash);
+	    
+	    } else {
+		
+		$outHash = hash($mode, $saltHash.$textHash);
+	    
 	    }
+	    
+	    if ($test === TRUE && $saltHash.$outHash === $salt)
+		return TRUE;
+	    elseif ($test === TRUE)
+		return FALSE;
+	
+	}
+	
         return $saltHash.$outHash;
+    
     }
 ?>
 <?php
